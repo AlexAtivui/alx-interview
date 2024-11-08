@@ -1,44 +1,53 @@
 #!/usr/bin/python3
-""" N queens """
+
 import sys
 
+def is_safe(board, col, row):
+    """
+    Checks if placing a queen at (row, col) is safe (doesn't attack any other queens).
 
-if len(sys.argv) > 2 or len(sys.argv) < 2:
-        print("Usage: nqueens N")
-            exit(1)
+    Args:
+        board (list): List representing the chessboard (queen positions in each column).
+        col (int): Current column.
+        row (int): Row to check for queen placement.
+    Returns:
+            bool: True if placement is safe, False otherwise.
+    """
+    # Check for queens in the same row or diagonals
+    for i in range(col):
+        if board[i] == row or abs(col - i) == abs(row - board[i]):
+            return False
+    return True
+def solve_n_queens(board, col):
+    """
+    Solves the N-Queens problem using backtracking algorithm.
 
-            if not sys.argv[1].isdigit():
-                    print("N must be a number")
-                        exit(1)
+    Args:
+        board (list): List representing the chessboard (queen positions in each column).
+        col (int): Current column to place the queen.
+    Prints all possible solutions (queen positions) on the board.
+    """
+    if col == len(board):
+        print(board)
+        return
+    for row in range(len(board)):
+        if is_safe(board, col, row):
+            board[col] = row
+            solve_n_queens(board, col + 1)
+            board[col] = -1
 
-                        if int(sys.argv[1]) < 4:
-                                print("N must be at least 4")
-                                    exit(1)
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: nqueens N", file=sys.stderr)
+        exit(1)
+    try:
+        N = int(sys.argv[1])
+    except ValueError:
+        print("N must be a number", file=sys.stderr)
+        exit(1)
+    if N < 4:
+        print("N must be at least 4", file=sys.stderr)
+        exit(1)
 
-                                    n = int(sys.argv[1])
-
-
-                                    def queens(n, i=0, a=[], b=[], c=[]):
-                                            """ find possible positions """
-                                                if i < n:
-                                                            for j in range(n):
-                                                                            if j not in a and i + j not in b and i - j not in c:
-                                                                                                yield from queens(n, i + 1, a + [j], b + [i + j], c + [i - j])
-                                                                                                    else:
-                                                                                                                yield a
-
-
-                                                                                                                def solve(n):
-                                                                                                                        """ solve """
-                                                                                                                            k = []
-                                                                                                                                i = 0
-                                                                                                                                    for solution in queens(n, 0):
-                                                                                                                                                for s in solution:
-                                                                                                                                                                k.append([i, s])
-                                                                                                                                                                            i += 1
-                                                                                                                                                                                    print(k)
-                                                                                                                                                                                            k = []
-                                                                                                                                                                                                    i = 0
-
-
-                                                                                                                                                                                                    solve(n)
+    board = [-1] * N
+    solve_n_queens(board, 0)
